@@ -1,8 +1,17 @@
+import { Suspense } from "react";
+import { getServerSession } from "next-auth";
 import { Box, Typography } from "@mui/material";
 import LoginButton from "@app/ui/login/login-button";
-import { Suspense } from "react";
+import { authOptions } from "@lib/auth";
+import { redirect } from "next/navigation";
 
-export default function Login() {
+export default async function Login() {
+  const session = await getServerSession(authOptions);
+
+  if (session) {
+    redirect("/");
+  }
+
   return (
     <Box
       sx={{
