@@ -1,14 +1,8 @@
-"use client";
-
-import { signIn } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
-
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
+import LoginButton from "@app/ui/login/login-button";
+import { Suspense } from "react";
 
 export default function Login() {
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
-
   return (
     <Box
       sx={{
@@ -23,12 +17,9 @@ export default function Login() {
       <Typography variant="h5" component="h1">
         OAuth Dashboard Login
       </Typography>
-      <Button
-        onClick={() => signIn("google", { callbackUrl })}
-        variant="contained"
-      >
-        Sign in with Google
-      </Button>
+      <Suspense>
+        <LoginButton />
+      </Suspense>
     </Box>
   );
 }
