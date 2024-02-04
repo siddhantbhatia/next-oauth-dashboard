@@ -1,0 +1,20 @@
+.navbar {
+    display: flex;
+    flex-direction: column;
+    width: 240px;
+    background-color: white;
+    gap: 8px;
+    margin-top: 5px;
+}
+
+.navbar_items {
+    padding: 20px;
+    text-align: center;
+    border-radius: 8px;
+    margin: 4px;
+}
+
+.navbar_items:hover, .navbar_items_active {
+    background-color: #a7c0c87a;
+    color: #006cff91
+}
