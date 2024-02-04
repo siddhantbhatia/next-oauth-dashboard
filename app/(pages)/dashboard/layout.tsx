@@ -1,16 +1,20 @@
-"use client";
 import DashboardHeader from "@app/ui/dashboard/header";
 import DashboardSideNav from "@app/ui/dashboard/sidenav";
 import { Box } from "@mui/system";
 
-export default function DashboardLayout({
+import { getServerSession } from "next-auth";
+import { authOptions } from "@lib/auth";
+
+export default async function DashboardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getServerSession(authOptions);
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-      <DashboardHeader />
+      <DashboardHeader session={session} />
       <Box sx={{ display: "flex", flexGrow: 1 }}>
         <DashboardSideNav />
         <Box component="main" sx={{ flexGrow: 1, bgcolor: "#80808026", p: 3 }}>

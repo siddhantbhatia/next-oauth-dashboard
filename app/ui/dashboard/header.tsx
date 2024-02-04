@@ -1,20 +1,67 @@
+"use client";
+
 import * as React from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
 
-export default function DashboardHeader() {
+import { signOut } from "next-auth/react";
+import { Session } from "next-auth";
+import { Avatar, Menu, MenuItem } from "@mui/material";
+
+export default function DashboardHeader({
+  session,
+}: {
+  session: Session | null;
+}) {
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
+    null
+  );
+
+  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElUser(event.currentTarget);
+  };
+
+  const handleLogout = () => {
+    setAnchorElUser(null);
+    signOut();
+  };
+
+  const userAvatar = session?.user?.image ?? "";
+
   return (
     <AppBar position="relative">
       <Toolbar>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           OAuth Dashboard
         </Typography>
-        <Button color="inherit">Profile</Button>
+        <Box sx={{ flexGrow: 0 }}>
+          <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+            <Avatar alt="Remy Sharp" src={userAvatar} />
+          </IconButton>
+          <Menu
+            sx={{ mt: "45px" }}
+            id="menu-appbar"
+            anchorEl={anchorElUser}
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+            keepMounted
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+            open={Boolean(anchorElUser)}
+            onClose={handleLogout}
+          >
+            <MenuItem onClick={handleLogout}>
+              <Typography textAlign="center">Logout</Typography>
+            </MenuItem>
+          </Menu>
+        </Box>
       </Toolbar>
     </AppBar>
   );
