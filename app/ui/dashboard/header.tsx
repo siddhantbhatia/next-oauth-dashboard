@@ -45,7 +45,7 @@ export default function DashboardHeader() {
         </Typography>
         <Box sx={{ flexGrow: 0 }}>
           <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-            <Avatar alt="Remy Sharp" src={userAvatar} />
+            <Avatar alt="user-avatar" src={userAvatar} />
           </IconButton>
           <Menu
             sx={{ mt: "45px" }}

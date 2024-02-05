@@ -4,9 +4,7 @@ import { Box } from "@mui/system";
 
 export default async function DashboardLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: React.PropsWithChildren) {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       <DashboardHeader />
