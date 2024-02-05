@@ -8,14 +8,19 @@ import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 
 import { signOut } from "next-auth/react";
-import { Session } from "next-auth";
 import { Avatar, Menu, MenuItem } from "@mui/material";
 
-export default function DashboardHeader({
-  session,
-}: {
-  session: Session | null;
-}) {
+import {
+  sessionSlice,
+  useSelector,
+  useDispatch,
+  selectSession,
+} from "@lib/redux";
+
+export default function DashboardHeader() {
+  const dispatch = useDispatch();
+  const session = useSelector(selectSession);
+
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
@@ -25,6 +30,7 @@ export default function DashboardHeader({
   };
 
   const handleLogout = () => {
+    dispatch(sessionSlice.actions.clearSession());
     setAnchorElUser(null);
     signOut();
   };
