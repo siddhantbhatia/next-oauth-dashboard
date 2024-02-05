@@ -55,7 +55,7 @@ export default function UserDataTable({ userData }: DashboardProps) {
                 <TableCell align="left">{row.id}</TableCell>
                 <TableCell align="left">{row.first_name}</TableCell>
                 <TableCell align="left">{row.last_name}</TableCell>
-                <TableCell align="left">
+                <TableCell align="left" data-testid="user-email">
                   {maskFlag ? "***" : row.email}
                 </TableCell>
               </TableRow>
