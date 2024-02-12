@@ -1,15 +1,17 @@
 "use client";
 import { Select, Spin, Typography } from "antd";
-import { useState } from "react";
 import { Map, AdvancedMarker, Pin } from "@vis.gl/react-google-maps";
-import getLocationPrediction from "@app/data/get-location-prediction";
-import getLocationDetail from "@app/data/get-location-detail";
-
-const OPTIONS = [
-  { value: "Burns Bay Road", label: "HAHA1" },
-  { value: "Downing Street", label: "HAHA2" },
-  { value: "Wall Street", label: "HAHA3" },
-];
+import { useDispatch, useSelector } from "@lib/redux";
+import {
+  selectCoordinate,
+  selectPrediction,
+  selectPredictionStatus,
+} from "@lib/redux/slices/locationSlice";
+import {
+  getDetailAsync,
+  getPredictionAsync,
+} from "@lib/redux/slices/locationSlice/thunks";
+import debounce from "@app/util/debounce";
 
 const { Title } = Typography;
 
@@ -19,46 +21,22 @@ interface SelectOption {
 }
 
 export default function MapPage() {
-  const [value, setValue] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [options, setOptions] = useState<SelectOption[]>([]);
-  const [coordinates, setCoordinates] = useState({
-    lat: 3.1472732,
-    lng: 101.6995352,
+  const dispatch = useDispatch();
+  const options = useSelector(selectPrediction);
+  const loading = useSelector(selectPredictionStatus);
+  const coordinates = useSelector(selectCoordinate);
+
+  const handleSelect = (option: SelectOption) => {
+    dispatch(getDetailAsync(option.value));
+  };
+
+  const handleSearch = debounce((input: string) => {
+    if (input.trim() === "") {
+      return;
+    }
+
+    dispatch(getPredictionAsync(input));
   });
-  const handleSearch = (value: string) => {
-    if (value.length == 2) {
-      setOptions(OPTIONS.slice(2));
-    } else {
-      setOptions(OPTIONS);
-    }
-  };
-
-  const onSelect = async (option: SelectOption) => {
-    const response = await getLocationDetail(option.value);
-
-    if (response.status === "OK") {
-      setCoordinates({
-        lat: response.results[0].geometry.location.lat,
-        lng: response.results[0].geometry.location.lng,
-      });
-    }
-  };
-
-  const getPredictions = async (input: string) => {
-    setLoading(true);
-    const response = await getLocationPrediction(input);
-
-    if (response.status === "OK") {
-      setOptions(
-        response.predictions.map((prediction) => ({
-          value: prediction.place_id,
-          label: prediction.description,
-        }))
-      );
-      setLoading(false);
-    }
-  };
 
   return (
     <div
@@ -69,19 +47,24 @@ export default function MapPage() {
         justifyContent: "center",
         gap: "16px",
         minHeight: "100vh",
+        background: "#80808026",
       }}
     >
       <Title level={3}>Location search</Title>
       <Select
         labelInValue
         showSearch
+        allowClear
         placeholder="Enter location..."
         notFoundContent={loading ? <Spin size="small" /> : null}
+        loading={Boolean(loading)}
         style={{ width: 500 }}
-        options={options}
-        onSelect={onSelect}
-        onSearch={(value: string) => getPredictions(value)}
-        onChange={(e) => console.log(e)}
+        options={options.map((option) => ({
+          value: option.place_id,
+          label: option.description,
+        }))}
+        onSelect={handleSelect}
+        onSearch={(input) => handleSearch(input)}
         size="large"
         filterOption={false}
       />
@@ -90,7 +73,7 @@ export default function MapPage() {
         defaultZoom={17}
         gestureHandling={"greedy"}
         disableDefaultUI={true}
-        style={{ height: 500, width: 500 }}
+        style={{ height: 500, width: 500, borderRadius: 8 }}
         mapId={"f24b7abb4f7c7751"}
       >
         <AdvancedMarker
