@@ -1,6 +1,6 @@
 import { Box } from "@mui/system";
 import { Typography } from "@mui/material";
-import getAllUserData from "@app/data/get-user-data";
+import getAllUserData from "@app/data/get-all-user-data";
 import filterUserStringData, {
   FilterRule,
 } from "@app/util/filter-user-string-data";
@@ -12,8 +12,8 @@ const filterRules: FilterRule[] = [
 ];
 
 export default async function DashboardHomePage() {
-  // const userData = await getAllUserData();
-  // const filteredData = filterUserStringData(filterRules, userData);
+  const userData = await getAllUserData();
+  const filteredData = filterUserStringData(filterRules, userData);
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
@@ -24,7 +24,7 @@ export default async function DashboardHomePage() {
         The data has been filtered for first name starting with &quot;G&quot; or
         last name &quot;W&quot;
       </Typography>
-      <UserDataTable userData={[]} />
+      <UserDataTable userData={filteredData} />
     </Box>
   );
 }

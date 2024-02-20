@@ -1,4 +1,4 @@
-import getAllUserData from "./get-user-data";
+import getAllUserData from "./get-all-user-data";
 
 const jestMock = jest.fn().mockResolvedValue({
   json: jest.fn().mockResolvedValue({

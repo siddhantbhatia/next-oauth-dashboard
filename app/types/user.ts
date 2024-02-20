@@ -6,7 +6,7 @@ export interface UserData {
   avatar: string;
 }
 
-export interface UserDataResponse {
+export interface UserDataAllResponse {
   page: number;
   per_page: number;
   total: number;
