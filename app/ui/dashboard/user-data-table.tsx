@@ -31,7 +31,6 @@ export default function UserDataTable(props: DashboardProps) {
   const [userData, setUserData] = useState<UserData[]>([]);
   const [maskFlag, setMaskFlag] = useState(true);
   const [unmaskedRows, setUnmaskedRows] = useState(new Set<UserData["id"]>());
-  // const unmaskedRows = new Set<UserData["id"]>();
 
   useEffect(() => {
     fetchData([]);
@@ -50,8 +49,6 @@ export default function UserDataTable(props: DashboardProps) {
     } else {
       unmaskedRows.delete(id);
     }
-
-    console.log("rows", Array.from(unmaskedRows));
 
     fetchData(Array.from(unmaskedRows));
     setUnmaskedRows(unmaskedRows);
