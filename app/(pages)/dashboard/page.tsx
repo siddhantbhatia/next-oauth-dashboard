@@ -24,6 +24,9 @@ export default async function DashboardHomePage() {
         The data has been filtered for first name starting with &quot;G&quot; or
         last name &quot;W&quot;
       </Typography>
+      <Typography component="h4" variant="subtitle2">
+        Click on the email cell to mask/unmask the email address
+      </Typography>
       <UserDataTable userData={filteredData} />
     </Box>
   );

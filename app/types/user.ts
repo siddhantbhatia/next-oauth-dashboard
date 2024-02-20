@@ -13,3 +13,7 @@ export interface UserDataAllResponse {
   total_pages: number;
   data: UserData[];
 }
+
+export interface UserDataSingleResponse {
+  data: UserData;
+}

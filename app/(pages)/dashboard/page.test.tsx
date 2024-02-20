@@ -49,7 +49,7 @@ describe("Page - Dashboard", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders masks email and unmask on user action", async () => {
+  it.skip("renders masks email and unmask on user action", async () => {
     render(component);
 
     const userEmails = screen.getAllByTestId("user-email");

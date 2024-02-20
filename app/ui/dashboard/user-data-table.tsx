@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 import {
   Table,
@@ -11,64 +11,46 @@ import {
   TableRow,
   Paper,
   Box,
-  Switch,
-  FormControlLabel,
 } from "@mui/material";
-import getAllUserData from "@app/data/get-user-data";
-import filterUserStringData, {
-  FilterRule,
-} from "@app/util/filter-user-string-data";
 
 import { DashboardProps } from "./types";
 import { UserData } from "@app/types/user";
-
-const filterRules: FilterRule[] = [
-  { property: "first_name", regex: "^G", regexFlag: "i" },
-  { property: "last_name", regex: "^W", regexFlag: "i" },
-];
+import getSingleUserData from "@app/data/get-single-user-data";
 
 export default function UserDataTable(props: DashboardProps) {
-  const [userData, setUserData] = useState<UserData[]>([]);
-  const [maskFlag, setMaskFlag] = useState(true);
+  const [userData, setUserData] = useState<UserData[]>(props.userData);
   const [unmaskedRows, setUnmaskedRows] = useState(new Set<UserData["id"]>());
 
-  useEffect(() => {
-    fetchData([]);
-  }, []);
+  const fetchOnDemandData = async (id: UserData["id"]) => {
+    const singleUserData = await getSingleUserData(id);
 
-  const fetchData = async (ids: Array<UserData["id"]>) => {
-    const userData = await getAllUserData(ids);
-    const filteredData = filterUserStringData(filterRules, userData);
+    const maskedUserData = userData.filter((data) => data.id === id)[0];
+    maskedUserData.email = singleUserData.email;
 
-    setUserData(filteredData);
+    setUserData([...userData]);
   };
 
+  const maskOnDemandData = async (id: UserData["id"]) => {
+    const unMaskedUserData = userData.filter((data) => data.id === id)[0];
+    unMaskedUserData.email = "***";
+
+    setUserData([...userData]);
+  };
   const onRowClick = (id: UserData["id"]) => {
-    if (!unmaskedRows.has(id)) {
-      unmaskedRows.add(id);
-    } else {
+    if (unmaskedRows.has(id)) {
       unmaskedRows.delete(id);
+      maskOnDemandData(id);
+    } else {
+      unmaskedRows.add(id);
+
+      fetchOnDemandData(id);
     }
 
-    fetchData(Array.from(unmaskedRows));
     setUnmaskedRows(unmaskedRows);
   };
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-      <FormControlLabel
-        control={
-          <Switch
-            checked={maskFlag}
-            onChange={() => {
-              setMaskFlag(!maskFlag);
-            }}
-            name="mask-switch"
-            inputProps={{ "aria-label": "controlled" }}
-          />
-        }
-        label="Mask emails"
-      />
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
@@ -84,12 +66,19 @@ export default function UserDataTable(props: DashboardProps) {
               <TableRow
                 key={row.id}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                onClick={() => onRowClick(row.id)}
+                hover={true}
               >
                 <TableCell align="left">{row.id}</TableCell>
                 <TableCell align="left">{row.first_name}</TableCell>
                 <TableCell align="left">{row.last_name}</TableCell>
-                <TableCell align="left" data-testid="user-email">
+                <TableCell
+                  align="left"
+                  data-testid="user-email"
+                  onClick={() => onRowClick(row.id)}
+                  sx={{
+                    cursor: "pointer",
+                  }}
+                >
                   {row.email}
                 </TableCell>
               </TableRow>
