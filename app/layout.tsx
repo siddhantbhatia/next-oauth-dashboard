@@ -5,7 +5,7 @@ import { StoreProvider } from "@lib/redux/providers";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@lib/auth";
 
-const inter = Inter({ subsets: ["latin"] });
+// const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "OAuth Dashboard",
@@ -21,7 +21,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body>
         <StoreProvider session={session}>{children}</StoreProvider>
       </body>
     </html>

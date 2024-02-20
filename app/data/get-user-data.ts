@@ -13,7 +13,7 @@ async function getUserData(page: number) {
   return (await response.json()) as UserDataResponse;
 }
 
-export default async function getAllUserData() {
+export default async function getAllUserData(ids: Array<UserData["id"]>) {
   const numberOfPages = (await getUserData(1)).total_pages;
 
   const promises = [...Array(numberOfPages)].map((_, idx) =>
@@ -21,11 +21,21 @@ export default async function getAllUserData() {
   );
   const resolvedPromises = await Promise.allSettled(promises);
 
-  return resolvedPromises.reduce((acc: UserData[], curr) => {
+  const data = resolvedPromises.reduce((acc: UserData[], curr) => {
     if (curr.status === "fulfilled") {
       acc.push(...curr.value.data);
     }
 
     return acc;
   }, []);
+
+  const processedData = data.map((userData) => {
+    if (!ids.includes(userData.id)) {
+      userData.email = "***";
+    }
+
+    return userData;
+  });
+
+  return processedData;
 }

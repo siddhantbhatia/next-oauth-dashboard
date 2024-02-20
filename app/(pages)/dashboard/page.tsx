@@ -12,8 +12,8 @@ const filterRules: FilterRule[] = [
 ];
 
 export default async function DashboardHomePage() {
-  const userData = await getAllUserData();
-  const filteredData = filterUserStringData(filterRules, userData);
+  // const userData = await getAllUserData();
+  // const filteredData = filterUserStringData(filterRules, userData);
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
@@ -24,7 +24,7 @@ export default async function DashboardHomePage() {
         The data has been filtered for first name starting with &quot;G&quot; or
         last name &quot;W&quot;
       </Typography>
-      <UserDataTable userData={filteredData} />
+      <UserDataTable userData={[]} />
     </Box>
   );
 }

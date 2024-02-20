@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import {
   Table,
@@ -14,12 +14,48 @@ import {
   Switch,
   FormControlLabel,
 } from "@mui/material";
-import Image from "next/image";
+import getAllUserData from "@app/data/get-user-data";
+import filterUserStringData, {
+  FilterRule,
+} from "@app/util/filter-user-string-data";
 
 import { DashboardProps } from "./types";
+import { UserData } from "@app/types/user";
 
-export default function UserDataTable({ userData }: DashboardProps) {
+const filterRules: FilterRule[] = [
+  { property: "first_name", regex: "^G", regexFlag: "i" },
+  { property: "last_name", regex: "^W", regexFlag: "i" },
+];
+
+export default function UserDataTable(props: DashboardProps) {
+  const [userData, setUserData] = useState<UserData[]>([]);
   const [maskFlag, setMaskFlag] = useState(true);
+  const [unmaskedRows, setUnmaskedRows] = useState(new Set<UserData["id"]>());
+  // const unmaskedRows = new Set<UserData["id"]>();
+
+  useEffect(() => {
+    fetchData([]);
+  }, []);
+
+  const fetchData = async (ids: Array<UserData["id"]>) => {
+    const userData = await getAllUserData(ids);
+    const filteredData = filterUserStringData(filterRules, userData);
+
+    setUserData(filteredData);
+  };
+
+  const onRowClick = (id: UserData["id"]) => {
+    if (!unmaskedRows.has(id)) {
+      unmaskedRows.add(id);
+    } else {
+      unmaskedRows.delete(id);
+    }
+
+    console.log("rows", Array.from(unmaskedRows));
+
+    fetchData(Array.from(unmaskedRows));
+    setUnmaskedRows(unmaskedRows);
+  };
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
@@ -51,12 +87,13 @@ export default function UserDataTable({ userData }: DashboardProps) {
               <TableRow
                 key={row.id}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                onClick={() => onRowClick(row.id)}
               >
                 <TableCell align="left">{row.id}</TableCell>
                 <TableCell align="left">{row.first_name}</TableCell>
                 <TableCell align="left">{row.last_name}</TableCell>
                 <TableCell align="left" data-testid="user-email">
-                  {maskFlag ? "***" : row.email}
+                  {row.email}
                 </TableCell>
               </TableRow>
             ))}
