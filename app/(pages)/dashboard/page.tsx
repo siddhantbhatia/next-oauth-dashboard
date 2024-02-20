@@ -1,6 +1,6 @@
 import { Box } from "@mui/system";
 import { Typography } from "@mui/material";
-import getAllUserData from "@app/data/get-user-data";
+import getAllUserData from "@app/data/get-all-user-data";
 import filterUserStringData, {
   FilterRule,
 } from "@app/util/filter-user-string-data";
@@ -23,6 +23,9 @@ export default async function DashboardHomePage() {
       <Typography component="h3" variant="subtitle1">
         The data has been filtered for first name starting with &quot;G&quot; or
         last name &quot;W&quot;
+      </Typography>
+      <Typography component="h4" variant="subtitle2">
+        Click on the email cell to mask/unmask the email address
       </Typography>
       <UserDataTable userData={filteredData} />
     </Box>

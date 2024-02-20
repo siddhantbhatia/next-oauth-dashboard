@@ -1,4 +1,4 @@
-import { UserData, UserDataResponse } from "@app/types/user";
+import { UserData, UserDataAllResponse } from "@app/types/user";
 
 const URL = "https://reqres.in/api/users";
 
@@ -10,7 +10,7 @@ async function getUserData(page: number) {
     throw new Error("Unable to fetch data");
   }
 
-  return (await response.json()) as UserDataResponse;
+  return (await response.json()) as UserDataAllResponse;
 }
 
 export default async function getAllUserData() {
@@ -23,7 +23,12 @@ export default async function getAllUserData() {
 
   return resolvedPromises.reduce((acc: UserData[], curr) => {
     if (curr.status === "fulfilled") {
-      acc.push(...curr.value.data);
+      const userDataArray = curr.value.data.map((userData) => ({
+        ...userData,
+        email: "***",
+      }));
+      
+      acc.push(...userDataArray);
     }
 
     return acc;

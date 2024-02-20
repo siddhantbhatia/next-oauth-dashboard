@@ -11,31 +11,46 @@ import {
   TableRow,
   Paper,
   Box,
-  Switch,
-  FormControlLabel,
 } from "@mui/material";
-import Image from "next/image";
 
 import { DashboardProps } from "./types";
+import { UserData } from "@app/types/user";
+import getSingleUserData from "@app/data/get-single-user-data";
 
-export default function UserDataTable({ userData }: DashboardProps) {
-  const [maskFlag, setMaskFlag] = useState(true);
+export default function UserDataTable(props: DashboardProps) {
+  const [userData, setUserData] = useState<UserData[]>(props.userData);
+  const [unmaskedRows, setUnmaskedRows] = useState(new Set<UserData["id"]>());
+
+  const fetchOnDemandData = async (id: UserData["id"]) => {
+    const singleUserData = await getSingleUserData(id);
+
+    const maskedUserData = userData.filter((data) => data.id === id)[0];
+    maskedUserData.email = singleUserData.email;
+
+    setUserData([...userData]);
+  };
+
+  const maskOnDemandData = async (id: UserData["id"]) => {
+    const unMaskedUserData = userData.filter((data) => data.id === id)[0];
+    unMaskedUserData.email = "***";
+
+    setUserData([...userData]);
+  };
+  const onRowClick = (id: UserData["id"]) => {
+    if (unmaskedRows.has(id)) {
+      unmaskedRows.delete(id);
+      maskOnDemandData(id);
+    } else {
+      unmaskedRows.add(id);
+
+      fetchOnDemandData(id);
+    }
+
+    setUnmaskedRows(unmaskedRows);
+  };
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-      <FormControlLabel
-        control={
-          <Switch
-            checked={maskFlag}
-            onChange={() => {
-              setMaskFlag(!maskFlag);
-            }}
-            name="mask-switch"
-            inputProps={{ "aria-label": "controlled" }}
-          />
-        }
-        label="Mask emails"
-      />
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
@@ -51,12 +66,20 @@ export default function UserDataTable({ userData }: DashboardProps) {
               <TableRow
                 key={row.id}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                hover={true}
               >
                 <TableCell align="left">{row.id}</TableCell>
                 <TableCell align="left">{row.first_name}</TableCell>
                 <TableCell align="left">{row.last_name}</TableCell>
-                <TableCell align="left" data-testid="user-email">
-                  {maskFlag ? "***" : row.email}
+                <TableCell
+                  align="left"
+                  data-testid="user-email"
+                  onClick={() => onRowClick(row.id)}
+                  sx={{
+                    cursor: "pointer",
+                  }}
+                >
+                  {row.email}
                 </TableCell>
               </TableRow>
             ))}
